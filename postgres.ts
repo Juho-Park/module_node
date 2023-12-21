@@ -38,13 +38,11 @@ async function pool() {
 
 function getConfig() {
     const { PG_HOST, PG_PORT, PG_USER, PG_PASSWORD, PG_DB } = process.env
-    const isPG = [PG_HOST, PG_PORT, PG_USER, PG_PASSWORD, PG_DB].reduce((prev, curr) => {
-        return prev && curr != undefined
-    }, true)
+    const isPG = PG_HOST && PG_PORT && PG_USER && PG_PASSWORD && PG_DB
     if (isPG)
         return {
             host: PG_HOST,
-            port: PG_PORT,
+            port: Number(PG_PORT),
             user: PG_USER,
             password: PG_PASSWORD,
             database: PG_DB
@@ -57,13 +55,20 @@ async function client() {
     await client.query('BEGIN')
     return new TransactionManager(client)
 }
+
 class TransactionManager {
     private client
     constructor(client: any) {
         this.client = client
     }
-    q(...args: any[]) {
+    q(...args: any[]): Promise<QueryResult<any>> {
         return this.client.query(...args)
+    }
+    row(...args: any[]) {
+        return this.q(...args).then(res => res.rows[0])
+    }
+    rows(...args: any[]) {
+        return this.q(...args).then(res => res.rows)
     }
     async commit() {
         await this.client.query('commit')
@@ -100,37 +105,17 @@ const row = (statement: string, values?: any[]) =>
 const rows = (statement: string, values?: any[]) =>
     q(statement, values).then(res => res.rows)
 
-export default { q, row, rows, client }
+function toCamel(row: any) {
+    let result: any = {}
+    for (const key in row) {
+        if (row[key]?.constructor === ([]).constructor
+            && row[key].length > 0
+            && row[key][0].constructor === ({}).constructor
+        ) row[key] = row[key].map(toCamel)
+        const camelKey = key.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
+        result[camelKey] = row[key];
+    }
+    return result;
+}
 
-/**
- * @param {string} text
- * @param {Array<any>} values
- * @returns QueryResult keys: {command, rowCount, rows, fields, ...}
- */
-
-// let _pool: Pool
-// async function pool() {
-//     if (_pool) return _pool
-//     const { PGHOST: host, PGPORT: port, PGUSER: user, PGPASSWORD: password, PGDB: database } = process.env
-//     if (!(host && user && password && database && port)) {
-//         log.warn('Not found set values in .env\n\
-//                 PGHOST=\n\
-//                 PGPORT=\n\
-//                 PGUSER=\n\
-//                 PGPASSWORD=\n\
-//                 PGDB=')
-//         process.exit(1)
-//     }
-
-//     _pool = new Pool({ host, port, user, password, database })
-//     try {
-//         await _pool.query('select 1')
-//         log.info('connected postgres')
-//     } catch (e: any) {
-//         log.err(e.message)
-//         process.exit(1)
-//     }
-//     return _pool
-// }
-
-
+export default { q, row, rows, client, toCamel, TransactionManager }
