@@ -45,11 +45,12 @@ function getConfig() {
             port: Number(PG_PORT),
             user: PG_USER,
             password: PG_PASSWORD,
-            database: PG_DB
+            database: PG_DB,
+            connectionTImeoutMillis: 10 * 1000
         }
 }
 
-async function client() {
+async function transactionManager() {
     let _pool = await pool()
     let client = await _pool.connect()
     await client.query('BEGIN')
@@ -110,12 +111,14 @@ function toCamel(row: any) {
     for (const key in row) {
         if (row[key]?.constructor === ([]).constructor
             && row[key].length > 0
-            && row[key][0].constructor === ({}).constructor
-        ) row[key] = row[key].map(toCamel)
+            && row[key][0].constructor === ({}).constructor)
+            row[key] = row[key].map(toCamel)
+        else if (row[key]?.constructor === ({}).constructor)
+            row[key] = toCamel(row[key])
         const camelKey = key.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
         result[camelKey] = row[key];
     }
     return result;
 }
 
-export default { q, row, rows, client, toCamel, TransactionManager }
+export default { q, row, rows, transactionManager, toCamel, TransactionManager }

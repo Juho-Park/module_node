@@ -3,10 +3,10 @@
 import jwt from 'jsonwebtoken'
 // import * as Types from 'types'
 
-let defaultKey: string = process.env.ledance ?? (process.env.NODE_ENV ?? 'testkey')
+const KEY: string = process.env.NODE_ENV === 'production' ? process.env.JWT ?? 'jwt key' : 'jwt key'
 // if (!key && !process.env.NODE_ENV) key = 'testkey'
 export function encode(json: object, key?: string) {
-    return jwt.sign(json, key ?? defaultKey)
+    return jwt.sign(json, key ?? KEY)
 }
 
 // WIP
@@ -18,7 +18,7 @@ export function decode(token: string, key?: string) { //: Types.Object.Token {//
     //         resolve(value as DecodeReturn)
     //     })
     // })
-    let decoded = jwt.verify(token, key ?? defaultKey)
+    let decoded = jwt.verify(token, key ?? KEY)
     return decoded// as Types.Object.Token
 }
 
