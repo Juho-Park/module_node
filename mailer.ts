@@ -1,7 +1,9 @@
 const nodemailer = require("nodemailer");
 
 if (!process.env.M_ID || !process.env.M_PW) {
-    console.error('Mail config is undefined')
+    console.error(`Set Config in .env
+M_ID=
+M_PW=`)
     process.exit(0)
 }
 

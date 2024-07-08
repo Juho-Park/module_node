@@ -11,10 +11,12 @@ const log = new Logger('/module/postgres')
 try {
     require('pg')
 } catch (e) {
-    log.err('Cannot find "pg" module | yarn add pg')
+    log.err(`Cannot find "pg" module
+yarn add pg
+yarn add -D @types/pg`)
     process.exit(1)
 }
-import { Pool, Client, QueryResult } from 'pg'
+import { Pool, Client, QueryResult, DatabaseError } from 'pg'
 
 let _pool: Pool
 async function pool() {
@@ -121,4 +123,4 @@ function toCamel(row: any) {
     return result;
 }
 
-export default { q, row, rows, transactionManager, toCamel, TransactionManager }
+export default { q, row, rows, transactionManager, toCamel, TransactionManager, Error: DatabaseError }

@@ -1,4 +1,5 @@
-// yarn add jsonwebtoken @types/jsonwebtoken
+// yarn add jsonwebtoken
+// yarn add -D @types/jsonwebtoken
 
 import jwt from 'jsonwebtoken'
 // import * as Types from 'types'
@@ -10,8 +11,8 @@ export function encode(json: object, key?: string) {
 }
 
 // WIP
-export function decode(token: string, key?: string) { //: Types.Object.Token {//Promise<DecodeReturn> {
-    if (!token) return {}// as Types.Object.Token
+export function decode<T>(token: string, key?: string): T { //: Types.Object.Token {//Promise<DecodeReturn> {
+    if (!token) return {} as T// as Types.Object.Token
     // return new Promise((resolve, reject) => {
     //     jwt.verify(token, key, (err, value) => {
     //         if (err) reject(err)
@@ -19,7 +20,7 @@ export function decode(token: string, key?: string) { //: Types.Object.Token {//
     //     })
     // })
     let decoded = jwt.verify(token, key ?? KEY)
-    return decoded// as Types.Object.Token
+    return decoded as T// as Types.Object.Token
 }
 
 export default { encode, decode }

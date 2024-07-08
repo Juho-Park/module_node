@@ -4,11 +4,10 @@ import crypto from 'crypto'
 const algorithm = 'sha256'
 const secretKey = process.env.NEXT_PUBLIC_LEWEIGHT
 
-function hmac(text: string, key: string) {
+export function hmac(text: string, key: string) {
     return crypto.createHmac(algorithm, key).update(text).digest('base64')
 }
 
-export default { hmac }
 
 
 // const iv = crypto.randomBytes(16);
