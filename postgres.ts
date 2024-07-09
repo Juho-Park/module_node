@@ -21,12 +21,13 @@ import { Pool, Client, QueryResult, DatabaseError } from 'pg'
 let _pool: Pool
 async function pool() {
     if (_pool) return _pool
-    const config = getConfig()
-    if (!config) {
-        log.err('not found PG_ config in .env')
-        process.exit(1)
-    }
-    _pool = new Pool(config)
+    // const config = getConfig()
+    // if (!config) {
+    //     log.err('not found PG_ config in .env')
+    //     process.exit(1)
+    // }
+    const { PG_CONNECTION } = process.env
+    _pool = new Pool({ connectionString: PG_CONNECTION })
 
     try {
         await _pool.query('select 1')
@@ -38,19 +39,21 @@ async function pool() {
     return _pool
 }
 
-function getConfig() {
-    const { PG_HOST, PG_PORT, PG_USER, PG_PASSWORD, PG_DB } = process.env
-    const isPG = PG_HOST && PG_PORT && PG_USER && PG_PASSWORD && PG_DB
-    if (isPG)
-        return {
-            host: PG_HOST,
-            port: Number(PG_PORT),
-            user: PG_USER,
-            password: PG_PASSWORD,
-            database: PG_DB,
-            connectionTImeoutMillis: 10 * 1000
-        }
-}
+// function getConfig() {
+//     const { PG_HOST, PG_USER, PG_PASSWORD, PG_DB, PG_ENDPOINT_ID } = process.env
+//     const isPG = PG_HOST && PG_USER && PG_PASSWORD && PG_DB && PG_ENDPOINT_ID
+//     if (isPG)
+//         return {
+//             host: PG_HOST,
+//             port: 5432,
+//             user: PG_USER,
+//             password: decodeURIComponent(PG_PASSWORD),
+//             database: PG_DB,
+//             ssl: true,
+//             connection: { options: `project=${PG_ENDPOINT_ID}` },
+//             connectionTImeoutMillis: 10 * 1000
+//         }
+// }
 
 async function transactionManager() {
     let _pool = await pool()
