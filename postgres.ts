@@ -1,5 +1,5 @@
-import Logger from './logger'
-const log = new Logger('/module/postgres')
+// import Logger from './logger'
+// const log = new Logger('/module/postgres')
 
 /** reference psql > sudo su postgres
  * createdb {db}
@@ -11,9 +11,10 @@ const log = new Logger('/module/postgres')
 try {
     require('pg')
 } catch (e) {
-    log.err(`Cannot find "pg" module
+    const message = `Cannot find "pg" module
 yarn add pg
-yarn add -D @types/pg`)
+yarn add -D @types/pg`
+    console.error(message)
     process.exit(1)
 }
 import { Pool, Client, QueryResult, DatabaseError } from 'pg'
@@ -21,39 +22,19 @@ import { Pool, Client, QueryResult, DatabaseError } from 'pg'
 let _pool: Pool
 async function pool() {
     if (_pool) return _pool
-    // const config = getConfig()
-    // if (!config) {
-    //     log.err('not found PG_ config in .env')
-    //     process.exit(1)
-    // }
     const { PG_CONNECTION } = process.env
-    _pool = new Pool({ connectionString: PG_CONNECTION })
+    _pool = new Pool({ connectionString: PG_CONNECTION, })
 
     try {
         await _pool.query('select 1')
-        log.debug('connected postgres')
+        console.debug('connected postgres')
     } catch (e: any) {
-        log.err(e.message)
+        console.error(e.message)
         process.exit(1)
     }
     return _pool
 }
-
-// function getConfig() {
-//     const { PG_HOST, PG_USER, PG_PASSWORD, PG_DB, PG_ENDPOINT_ID } = process.env
-//     const isPG = PG_HOST && PG_USER && PG_PASSWORD && PG_DB && PG_ENDPOINT_ID
-//     if (isPG)
-//         return {
-//             host: PG_HOST,
-//             port: 5432,
-//             user: PG_USER,
-//             password: decodeURIComponent(PG_PASSWORD),
-//             database: PG_DB,
-//             ssl: true,
-//             connection: { options: `project=${PG_ENDPOINT_ID}` },
-//             connectionTImeoutMillis: 10 * 1000
-//         }
-// }
+// function connect
 
 async function transactionManager() {
     let _pool = await pool()

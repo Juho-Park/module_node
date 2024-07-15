@@ -1,14 +1,14 @@
 import * as constant from './constant'
 import * as crypto from './crypto'
 import jwt from './jwt'
-import Logger from './logger'
+// import Logger from './logger'
 import * as nextLib from './next'
 import pg from './postgres'
 
 export {
     crypto, constant,
     jwt,
-    Logger,
+    // Logger,
     nextLib,
     pg,
 }
