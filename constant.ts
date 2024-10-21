@@ -6,6 +6,9 @@ export const Grades = [
     { age: 19, label: '고3', schoolValue: '3' },
     { age: 20, label: '졸업생', schoolValue: '졸업생' },
 ]
+export const Essay = [
+    { idx: 1, keyword: 'math', label: '수리', }
+]
 
 export const Mui = {
     color: {

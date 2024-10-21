@@ -8,6 +8,12 @@
  * \d {table}
  */
 
+// ref code
+/** 
+ * insert into department_requirement(dept,req)
+    select unnest($1::integer[]), $2
+ */
+
 try {
     require('pg')
 } catch (e) {
@@ -17,13 +23,18 @@ yarn add -D @types/pg`
     console.error(message)
     process.exit(1)
 }
-import { Pool, Client, QueryResult, DatabaseError } from 'pg'
+import path from 'path'
+import fs from 'fs'
+import { Pool, Client, QueryResult, DatabaseError, PoolClient, Submittable } from 'pg'
 
 let _pool: Pool
 async function pool() {
     if (_pool) return _pool
     const { PG_CONNECTION } = process.env
-    _pool = new Pool({ connectionString: PG_CONNECTION, })
+    _pool = new Pool({
+        connectionString: PG_CONNECTION,
+        // ssl: { ca: fs.readFileSync(path.resolve(process.cwd(),'ap-northeast-2-bundle.pem')) }
+    })
 
     try {
         await _pool.query('select 1')
@@ -36,7 +47,7 @@ async function pool() {
 }
 // function connect
 
-async function transactionManager() {
+async function getTransactionManager() {
     let _pool = await pool()
     let client = await _pool.connect()
     await client.query('BEGIN')
@@ -88,10 +99,11 @@ const q = (statement: string, values?: any[]) =>
  * fields: [{name: 'idx', ...}]
  */
 const row = (statement: string, values?: any[]) =>
-    q(statement, values).then(res => res.rows[0])
+    q(statement, values).then(res => toCamel(res.rows[0]))
 const rows = (statement: string, values?: any[]) =>
-    q(statement, values).then(res => res.rows)
+    q(statement, values).then(res => res.rows.map(toCamel))
 
+const exceptions = ['c_cc', 'c_ps', 'c_gm']
 function toCamel(row: any) {
     let result: any = {}
     for (const key in row) {
@@ -101,10 +113,16 @@ function toCamel(row: any) {
             row[key] = row[key].map(toCamel)
         else if (row[key]?.constructor === ({}).constructor)
             row[key] = toCamel(row[key])
-        const camelKey = key.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
-        result[camelKey] = row[key];
+        if (exceptions.includes(key)) result[key] = row[key] // except
+        else {
+            const camelKey = key.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
+            result[camelKey] = row[key];
+        }
     }
     return result;
 }
 
-export default { q, row, rows, transactionManager, toCamel, TransactionManager, Error: DatabaseError }
+export default {
+    q, row, rows, getTransactionManager, toCamel,
+    TransactionManager, Error: DatabaseError
+}

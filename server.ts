@@ -1,13 +1,13 @@
 import * as constant from './constant'
 import * as crypto from './crypto'
-import jwt from './jwt'
+// import jwt from './jwt'
 // import Logger from './logger'
 import * as nextLib from './next'
 import pg from './postgres'
 
-export {
+export default {
     crypto, constant,
-    jwt,
+    // jwt,
     // Logger,
     nextLib,
     pg,
