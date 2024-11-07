@@ -1,5 +1,7 @@
-// yarn add jsonwebtoken
-// yarn add -D @types/jsonwebtoken
+/*
+yarn add jsonwebtoken
+yarn add -D @types/jsonwebtoken
+*/
 
 import jwt from 'jsonwebtoken'
 // import * as Types from 'types'

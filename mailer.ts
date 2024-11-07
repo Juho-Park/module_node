@@ -1,9 +1,14 @@
-const nodemailer = require("nodemailer");
+/*
+yarn add nodemailer
+M_ID=
+M_PW=
+ */
+
+const nodemailer = require('nodemailer')
+// import nodemailer from 'nodemailer'
 
 if (!process.env.M_ID || !process.env.M_PW) {
-    console.error(`Set Config in .env
-M_ID=
-M_PW=`)
+    console.error()
     process.exit(0)
 }
 
@@ -21,20 +26,13 @@ const transporter = nodemailer.createTransport({
     }
 })
 
-function sendCode(dest: string, code: string) {
-    if (transporter == undefined) throw Error()
-
-    const contents = `안녕하세요.
-
-Mixed nuts Musics 에서 인증 번호를 요청하셨습니다. 인증 번호는 [${code}]입니다.
-
-이 인증 번호를 Mixed nuts Musics 에 입력하여 로그인하십시오.
-
-감사합니다.`
-    return transporter.sendMail({
-        from: '"Mixed nuts" <gy_almond@naver.com>',
+function send(dest: string, subject: string, contents: string) {
+    if (transporter === undefined) {
+        console.error('mailer', 'transporter is undefined')
+    } else transporter.sendMail({
+        from: '"공감각" <no_reply@ggg.com>',
         to: dest,
-        subject: `${code} : 토큰 발급 코드입니다.`,
+        subject,
         text: contents,
         html: `<pre>${contents}</pre>`,
     }, (err: any, info: any) => {
@@ -46,4 +44,4 @@ Mixed nuts Musics 에서 인증 번호를 요청하셨습니다. 인증 번호�
     });
 }
 
-export default { sendCode }
+export default { send }
