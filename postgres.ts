@@ -1,30 +1,14 @@
-// import Logger from './logger'
-// const log = new Logger('/module/postgres')
-
-/** reference psql > sudo su postgres
- * createdb {db}
- * \l
- * \c {db}
- * \d {table}
+/** READ.ME
+ * # install
+ * ```
+ yarn add pg
+ yarn add -D @types/pg
+ * ```
  */
 
-// ref code
-/** 
- * insert into department_requirement(dept,req)
-    select unnest($1::integer[]), $2
- */
+// reference
+// https://www.notion.so/Cheats-13813b063b5880109b13ebe4ba044dac?pvs=4#13e13b063b5880c0abcdcc2a908dd25f
 
-try {
-    require('pg')
-} catch (e) {
-    const message = `Cannot find "pg" module
-yarn add pg
-yarn add -D @types/pg`
-    console.error(message)
-    process.exit(1)
-}
-import path from 'path'
-import fs from 'fs'
 import { Pool, Client, QueryResult, DatabaseError, PoolClient, Submittable } from 'pg'
 
 let _pool: Pool

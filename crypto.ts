@@ -1,12 +1,17 @@
 import crypto from 'crypto'
 
-// const algorithm = 'aes-256-ctr'
 const algorithm = 'sha256'
 const secretKey = process.env.NEXT_PUBLIC_LEWEIGHT
 
-export function hmac(text: string, key: string) {
-    return crypto.createHmac(algorithm, key).update(text).digest('base64')
+function hmac(data: string | number, key?: string) {
+    const _key = key ?? secretKey
+    if (!_key) throw new Error('Empty secret key')
+    const _data = String(data)
+    return crypto.createHmac(algorithm, _key).update(_data).digest('hex')
+    // digest 'base64'
 }
+
+export default { hmac }
 
 
 
