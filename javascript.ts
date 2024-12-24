@@ -1,10 +1,10 @@
 export function parseFormData(data: FormData): any {
-    let res: any = {}
+    const res: any = {}
     const keys = data.keys()
     while (true) {
         const result = keys.next()
-        const values = data.getAll(result.value)
         if (result.done) break
+        const values = data.getAll(result.value)
 
         let value
         if (values.length === 1) {

@@ -15,16 +15,14 @@ let _pool: Pool
 async function pool() {
     if (_pool) return _pool
     const { PG_CONNECTION } = process.env
-    _pool = new Pool({
-        connectionString: PG_CONNECTION,
-        // ssl: { ca: fs.readFileSync(path.resolve(process.cwd(),'ap-northeast-2-bundle.pem')) }
-    })
+    _pool = new Pool({ connectionString: PG_CONNECTION })
 
     try {
         await _pool.query('select 1')
         console.debug('connected postgres')
-    } catch (e: any) {
-        console.error(e.message)
+    } catch (e) {
+        if (e instanceof DatabaseError)
+            console.error(e.message)
         process.exit(1)
     }
     return _pool
@@ -32,19 +30,19 @@ async function pool() {
 // function connect
 
 async function getTransactionManager() {
-    let _pool = await pool()
-    let client = await _pool.connect()
+    const _pool = await pool()
+    const client = await _pool.connect()
     await client.query('BEGIN')
     return new TransactionManager(client)
 }
 
 class TransactionManager {
     private client
-    constructor(client: any) {
+    constructor(client: PoolClient) {
         this.client = client
     }
     q(...args: any[]): Promise<QueryResult<any>> {
-        return this.client.query(...args)
+        return this.client.query(args[0], ...args)
     }
     row(...args: any[]) {
         return this.q(...args).then(res => res.rows[0])
