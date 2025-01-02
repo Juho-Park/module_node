@@ -1,7 +1,9 @@
+// https://nodejs.org/api/crypto.html
+
 import crypto from 'crypto'
 
 const algorithm = 'sha256'
-const secretKey = process.env.NEXT_PUBLIC_LEWEIGHT
+const secretKey = process.env.KEY_LEWEIGHT
 
 function hmac(data: string | number, key?: string) {
     const _key = key ?? secretKey
@@ -10,8 +12,14 @@ function hmac(data: string | number, key?: string) {
     return crypto.createHmac(algorithm, _key).update(_data).digest('hex')
     // digest 'base64'
 }
+function hash(data: string | number) {
+    const hex = crypto.createHash('SHA-1').update(String(data)).digest('hex')
+    console.log(hex)
+    return parseInt(hex, 16) % 1000000
+    
+}
 
-export default { hmac }
+export default { hmac, hash }
 
 
 
