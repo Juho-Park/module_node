@@ -36,13 +36,10 @@ class MongoDB {
         return this.collection;
     }
 
-    public disconnect(): void {
-        if (this.client) {
-            console.log("Closing MongoDB connection...");
-            this.client.close();
-            this.client = null;
-            this.db = null;
-        }
+    public disconnect() {
+        if (!this.client) return
+        console.log("Closing MongoDB connection...");
+        return this.client.close();
     }
 
 
@@ -88,5 +85,17 @@ class MongoDB {
         return _collection.deleteOne(filter);
     }
 }
+
+/** Warning
+(node:41600) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 SIGINT listeners added to [process]. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+ */
+// const shutdown = async () => {
+//     const instance = MongoDB.getInstance()
+//     await instance.disconnect()
+//     process.exit(0)
+// }
+// process.on('SIGINT', shutdown)
+// process.on('SIGTERM', shutdown)
 
 export default MongoDB.getInstance();
