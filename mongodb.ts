@@ -59,9 +59,11 @@ class MongoDB {
      * @param {Object} [options] - Additional query options.
      * @returns {Promise<Array>} Array of documents.
      */
-    async find(query: Object, options?: Object) {
+    async find(query: Object, options?: Object, limit?: number) {
         const _collection = this.collection ?? await this.connect()
-        return _collection.find(query, options).toArray();
+        let cursor = _collection.find(query, options)
+        if (limit) cursor = cursor.limit(limit)
+        return cursor.toArray();
     }
 
     /**
