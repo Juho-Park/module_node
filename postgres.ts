@@ -97,7 +97,7 @@ function toCamel(row: any) {
     for (const key in row) {
         if (row[key]?.constructor === ([]).constructor
             && row[key].length > 0
-            && row[key][0].constructor === ({}).constructor)
+            && row[key][0]?.constructor === ({}).constructor)
             row[key] = row[key].map(toCamel)
         else if (row[key]?.constructor === ({}).constructor)
             row[key] = toCamel(row[key])
@@ -109,7 +109,6 @@ function toCamel(row: any) {
     }
     return result;
 }
-
 
 class NewTransactionManager {
     private static pool: Pool;

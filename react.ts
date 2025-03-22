@@ -5,7 +5,7 @@
 export function parseFormData(e: React.FormEvent<HTMLFormElement>): any {
     const formData = new FormData(e.currentTarget)
     return Object.fromEntries(formData)
+    // WIP; checkbox undefined | 'on' value as boolean
 }
-
 
 export default { parseFormData }
