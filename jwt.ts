@@ -3,18 +3,18 @@ yarn add jsonwebtoken
 yarn add -D @types/jsonwebtoken
 */
 
-const jwt = require('jwonebtoken')
+const jwt = require('jsonwebtoken')
 // import * as Types from 'types'
 
 const KEY: string = process.env.NODE_ENV === 'production' && process.env.JWT ? process.env.JWT : 'jwt key'
 // if (!key && !process.env.NODE_ENV) key = 'testkey'
-export function encode(json: object, key?: string) {
+export function encode(json: object, key?: string): string {
     return jwt.sign(json, key ?? KEY)
 }
 
 // WIP
-export function decode<T>(token: string, key?: string): T { //: Types.Object.Token {//Promise<DecodeReturn> {
-    if (!token) return {} as T// as Types.Object.Token
+export function decode<T>(token: string | undefined, key?: string): T | undefined { //: Types.Object.Token {//Promise<DecodeReturn> {
+    if (!token) return // as Types.Object.Token
     // return new Promise((resolve, reject) => {
     //     jwt.verify(token, key, (err, value) => {
     //         if (err) reject(err)

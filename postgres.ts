@@ -1,9 +1,9 @@
 /** READ.ME
  * # install
- * ```
- yarn add pg
- yarn add -D @types/pg
- * ```
+ * yarn add pg
+ * yarn add -D @types/pg
+ * # env
+ * PG_CONNECTION=
  */
 
 // reference
