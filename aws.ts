@@ -50,7 +50,8 @@ export async function getPresignedPostURL(filename: string) {
     }
 }
 
-export async function getObjectPresignedURL(key: string) {
+export async function getObjectPresignedURL(key?: string): Promise<string> {
+    if (!key) return ''
     const command = new GetObjectCommand({
         Bucket,
         Key: key,
