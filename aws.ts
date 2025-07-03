@@ -17,7 +17,12 @@ const s3 = new S3Client({
 });
 const Bucket = process.env.AWS_BUCKET
 
-export async function getPresignedPostURL(filename: string) {
+interface PresignedPostResponse {
+    url: string,
+    fields: Record<string, string>,
+    key: string,
+}
+export async function getPresignedPost(filename: string): Promise<PresignedPostResponse> {
     const token = await utils.cookie.getAuthToken()
     if (!token) throw new Error('Not found auth token')
 
@@ -40,13 +45,11 @@ export async function getPresignedPostURL(filename: string) {
             Expires: 600, // Seconds before the presigned post expires. 3600 by default.
         })
 
-        return Response.json({ url, fields, key })
+        return { url, fields, key }
     } catch (e) {
-        if (e instanceof Error) {
+        if (e instanceof Error)
             console.error(e)
-            return Response.json({ error: e.message })
-        }
-        else throw e
+        throw e
     }
 }
 
