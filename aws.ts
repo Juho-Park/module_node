@@ -1,8 +1,9 @@
+'use server'
 
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-
+import Hashids from 'hashids'
 import path from 'path'
 import * as utils from '@/utils'
 import dayjs from '@/module/dayjs'
@@ -17,16 +18,15 @@ const s3 = new S3Client({
 });
 const Bucket = process.env.AWS_BUCKET
 
-interface PresignedPostResponse {
+export async function getPresignedPost(filename: string): Promise<{
     url: string,
     fields: Record<string, string>,
     key: string,
-}
-export async function getPresignedPost(filename: string): Promise<PresignedPostResponse> {
+}> {
     const token = await utils.cookie.getAuthToken()
     if (!token) throw new Error('Not found auth token')
 
-    const userDirectory = Buffer.alloc(token.id).toString('base64url')
+    const userDirectory = new Hashids().encode(token.id)
     const ext = path.extname(filename)
     const key = path.join(userDirectory, 'tutor',
         `profile_image_${dayjs().format('YYMMDD_HHmmss')}${ext}`)
@@ -36,12 +36,7 @@ export async function getPresignedPost(filename: string): Promise<PresignedPostR
             Key: key,
             Conditions: [
                 ['content-length-range', 0, 10485760], // up to 10 MB
-                // ['starts-with', '$Content-Type', contentType],
             ],
-            // Fields: {
-            // acl: 'public-read',
-            // 'Content-Type': contentType,
-            // },
             Expires: 600, // Seconds before the presigned post expires. 3600 by default.
         })
 
