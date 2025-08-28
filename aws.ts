@@ -5,7 +5,7 @@ import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import Hashids from 'hashids'
 import path from 'path'
-import * as utils from '@/utils'
+
 import dayjs from '@/module/dayjs'
 const Region = 'ap-northeast-2'
 
@@ -18,18 +18,16 @@ const s3 = new S3Client({
 });
 const Bucket = process.env.AWS_BUCKET
 
-export async function getPresignedPost(filename: string): Promise<{
+export async function getPresignedPost(
+    userId: number,
+    filepath: string
+): Promise<{
     url: string,
     fields: Record<string, string>,
     key: string,
 }> {
-    const token = await utils.cookie.getAuthToken()
-    if (!token) throw new Error('Not found auth token')
-
-    const userDirectory = new Hashids().encode(token.id)
-    const ext = path.extname(filename)
-    const key = path.join(userDirectory, 'tutor',
-        `profile_image_${dayjs().format('YYMMDD_HHmmss')}${ext}`)
+    const userDirectory = new Hashids().encode(userId)
+    const key = path.join(userDirectory, filepath)
     try {
         const { url, fields } = await createPresignedPost(s3, {
             Bucket: process.env.AWS_BUCKET,

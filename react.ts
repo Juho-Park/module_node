@@ -1,5 +1,9 @@
-export function parseFormData(e: React.FormEvent<HTMLFormElement>): any {
+export function parseEvent(e: React.FormEvent<HTMLFormElement>): any {
     const formData = new FormData(e.currentTarget)
+    return parseFormData(formData)
+}
+
+export function parseFormData(formData: FormData): any {
     const res: any = {}
     const keys = formData.keys()
     while (true) {
@@ -16,6 +20,3 @@ export function parseFormData(e: React.FormEvent<HTMLFormElement>): any {
     return res
 }
 
-
-
-export default { parseFormData }

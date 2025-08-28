@@ -30,53 +30,6 @@ async function pool() {
     return _pool
 }
 
-/** @deprecated */
-async function getTransactionManager() {
-    const _pool = await pool()
-    const client = await _pool.connect()
-    await client.query('BEGIN')
-    return new TransactionManager(client)
-}
-
-/** @deprecated */
-class TransactionManager {
-    private client
-    constructor(client: PoolClient) {
-        this.client = client
-    }
-    q(...args: any[]): Promise<QueryResult<any>> {
-        return this.client.query(args[0], ...args)
-    }
-    row(...args: any[]) {
-        return this.q(...args).then(res => res.rows[0])
-    }
-    rows(...args: any[]) {
-        return this.q(...args).then(res => res.rows)
-    }
-    async commit() {
-        console.log(this.client)
-        await this.client.query('commit')
-        console.log('commited')
-        this.client.release()
-        console.log('released')
-    }
-    async rollback() {
-        await this.client.query('rollback')
-        this.client.release()
-    }
-}
-// WIP; ?? used?
-// module.exports.transactionManager = connectClient
-// module.exports.client = connectClient
-// module.exports.end = () => pool().then(pool => pool.end())
-
-// WIP; not yet interface 
-// interface QueryFunc { (q: string, v?: any[]): Promise<QueryResult> }
-// interface RowFunc { (q: string, v?: any[]): Promise<T> }
-// const q: QueryFunc = (statement, values) => pool().then(p => p.query(statement, values))
-// const row: RowFunc = (statement, values) => q(statement, values).then(res => res.rows[0])
-// const rows: RowFunc = (statement, values) => q(statement, values).then(res => res.rows)
-
 const q = (statement: string, values?: any[]) =>
     pool().then(p => p.query(statement, values))
 /**
@@ -209,8 +162,7 @@ async function exampleTransaction() {
 // process.on('SIGTERM', shutdown)
 
 export default {
-    q, row, rows, getTransactionManager, toCamel,
+    q, row, rows, toCamel,
     NewTransactionManager,
-    TransactionManager,
     Error: DatabaseError
 }
