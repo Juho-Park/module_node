@@ -4,6 +4,7 @@ const prisma = new PrismaClient({
     log: [{ emit: 'event', level: 'query' }, 'info', 'warn', 'error']
 })
 
+// for custom logging
 prisma.$on("query", (e) => {
     // SQL 명령어 (SELECT, UPDATE 등)
     const type = e.query.split(" ")[0];
