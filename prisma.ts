@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient({
     log: [{ emit: 'event', level: 'query' }, 'info', 'warn', 'error']
@@ -52,3 +52,4 @@ const globalForPrisma = global as unknown as { prisma: typeof prisma }
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 export default prisma
+export { Prisma }
