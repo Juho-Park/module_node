@@ -46,7 +46,7 @@ export async function getPresignedPost(
     }
 }
 
-export async function getObjectPresignedURL(key?: string): Promise<string> {
+export async function getObjectPresignedURL(key: string | null): Promise<string> {
     if (!key) return ''
     const command = new GetObjectCommand({
         Bucket,

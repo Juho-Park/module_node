@@ -1,26 +1,32 @@
 // https://nodejs.org/api/crypto.html
-
 import crypto from 'crypto'
+import argon2 from 'argon2'
 
 const algorithm = 'sha256'
 const secretKey = process.env.KEY_LEWEIGHT
 
-function hmac(data: string | number, key?: string) {
+// Hash-based Message Authentication Code
+export function hmac(data: string | number, key?: string) {
     const _key = key ?? secretKey
     if (!_key) throw new Error('Empty secret key')
     const _data = String(data)
     return crypto.createHmac(algorithm, _key).update(_data).digest('hex')
-    // digest 'base64'
 }
-function hash(data: string | number) {
+export function hash(data: string | number) {
     const hex = crypto.createHash('SHA-1').update(String(data)).digest('hex')
-    console.log(hex)
     return parseInt(hex, 16) % 1000000
-    
 }
-
-export default { hmac, hash }
-
+export async function hashArgon2(password: string) {
+    return argon2.hash(password, {
+        type: argon2.argon2id,
+        memoryCost: 2 ** 16,
+        timeCost: 5,
+        parallelism: 1
+    })
+}
+export async function verifyArgon2(hash: string, password: string) {
+    return argon2.verify(hash, password)
+}
 
 
 // const iv = crypto.randomBytes(16);

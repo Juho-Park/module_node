@@ -50,7 +50,8 @@ async function getEnv(): Promise<{
         ? 'https' : 'http'
     const _redirect = `${protocol}://${host}/auth/naver`
 
-    return { clientID, clientSecret, redirectUri: _redirect }
+    const _clientSecret = clientSecret || ''
+    return { clientID, clientSecret: _clientSecret, redirectUri: _redirect }
 }
 
 export async function authorize(type: 'signin' | 'link') {
@@ -69,8 +70,7 @@ export async function authorize(type: 'signin' | 'link') {
 }
 
 export async function getTokens(code: string): Promise<Naver.TokenCode> {
-    const { NAVER_CLIENT_ID: clientID,
-        NAVER_CLIENT_SECRET: clientSecret } = process.env
+    const { clientID, clientSecret } = await getEnv()
     const URL = 'https://nid.naver.com/oauth2.0/token'
 
     const body = new URLSearchParams()

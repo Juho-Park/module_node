@@ -1,26 +1,25 @@
 /*
 yarn add nodemailer
-M_ID=
-M_PW=
+SMTP_SERVICE=
+SMTP_HOST=
+SMTP_PORT=
+EMAIL_ID=
+EMAIL_PW=
+EMAIL_FROM_NAME=
+EMAIL_FROM_EMAIL=
  */
 
 const nodemailer = require('nodemailer')
-// import nodemailer from 'nodemailer'
-
-if (!process.env.M_NAVER_ID || !process.env.M_NAVER_PW) {
-    console.error('nodemailer 이메일 발송 기능을 사용하려면 환경 변수들을 .env 파일에 설정해야 합니다.')
-    process.exit(0)
-}
 
 const transporter = nodemailer.createTransport({
-    service: 'naver',
-    host: 'smtp.naver.com',
-    port: 465,
-    secure: true,
+    service: process.env.SMTP_SERVICE,
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
     auth: {
-        user: process.env.M_NAVER_ID,
-        pass: process.env.M_NAVER_PW
+        user: process.env.EMAIL_ID,
+        pass: process.env.EMAIL_PW
     },
+    secure: true,
     logger: true,
     debugger: true,
     // tls: {
@@ -30,9 +29,9 @@ const transporter = nodemailer.createTransport({
 
 function send(dest: string, subject: string, contents: string) {
     if (transporter === undefined) {
-        console.error('mailer', 'transporter is undefined')
+        throw Error('Failed to create transporter. Check environment variables.')
     } else transporter.sendMail({
-        from: '"견고한 열매" <no_reply@robustnuts.com>',
+        from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM_EMAIL}>`,
         to: dest,
         subject,
         text: contents,
@@ -46,4 +45,4 @@ function send(dest: string, subject: string, contents: string) {
     });
 }
 
-export default { send }
+export { send }
