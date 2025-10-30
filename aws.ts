@@ -16,7 +16,7 @@ const s3 = new S3Client({
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!
     }
 });
-const Bucket = process.env.AWS_BUCKET
+const Bucket = process.env.AWS_BUCKET!
 
 export async function getPresignedPost(
     userId: number,
@@ -27,18 +27,18 @@ export async function getPresignedPost(
     key: string,
 }> {
     const userDirectory = new Hashids().encode(userId)
-    const key = path.join(userDirectory, filepath)
+    const Key = path.join(userDirectory, filepath)
     try {
         const { url, fields } = await createPresignedPost(s3, {
-            Bucket: process.env.AWS_BUCKET,
-            Key: key,
+            Bucket,
+            Key,
             Conditions: [
                 ['content-length-range', 0, 10485760], // up to 10 MB
             ],
             Expires: 600, // Seconds before the presigned post expires. 3600 by default.
         })
 
-        return { url, fields, key }
+        return { url, fields, key: Key }
     } catch (e) {
         if (e instanceof Error)
             console.error(e)
