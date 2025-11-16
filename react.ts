@@ -1,8 +1,10 @@
+/** @deprecated */
 export function parseEvent(e: React.FormEvent<HTMLFormElement>): any {
     const formData = new FormData(e.currentTarget)
     return parseFormData(formData)
 }
 
+/** @deprecated */
 export function parseFormData(formData: FormData): any {
     const res: any = {}
     const keys = formData.keys()
