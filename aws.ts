@@ -1,12 +1,8 @@
 'use server'
 
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import Hashids from 'hashids'
-import path from 'path'
-
-import dayjs from '@/module/dayjs'
+import { getSignedUrl as _getSignedUrl } from "@aws-sdk/s3-request-presigner";
 const Region = 'ap-northeast-2'
 
 const s3 = new S3Client({
@@ -18,6 +14,18 @@ const s3 = new S3Client({
 });
 const Bucket = process.env.AWS_BUCKET!
 
+export async function getSignedUrl(key: string | null): Promise<string> {
+    if (!key) return ''
+    const command = new GetObjectCommand({
+        Bucket,
+        Key: key,
+    });
+
+    return _getSignedUrl(s3, command, { expiresIn: 600 })
+    /**
+     * expiresIn: [sec]
+     */
+}
 export async function uploadFileToS3(file: File, key: string): Promise<string> {
     const { url, fields } = await getPresignedPost(key);
     const formData = new FormData();
@@ -35,7 +43,7 @@ export async function uploadFileToS3(file: File, key: string): Promise<string> {
 }
 
 /** key: file path */
-export async function getPresignedPost(
+async function getPresignedPost(
     key: string
 ): Promise<{
     url: string,
@@ -62,15 +70,9 @@ export async function getPresignedPost(
     }
 }
 
-export async function getObjectPresignedURL(key: string | null): Promise<string> {
-    if (!key) return ''
-    const command = new GetObjectCommand({
+export async function deleteFile(Key: string) {
+    await s3.send(new DeleteObjectCommand({
         Bucket,
-        Key: key,
-    });
-
-    return getSignedUrl(s3, command, { expiresIn: 600 })
-    /**
-     * expiresIn: [sec]
-     */
-} 
+        Key
+    }))
+}

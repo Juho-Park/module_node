@@ -17,10 +17,11 @@ export const useSearchParamsControl = () => {
     //     console.log(values, values.includes(value))
     //     return false
     // }
-    const set = (name: string, value: string) => {
+    const set = (name: string, value: string, history: boolean = false) => {
         const params = new URLSearchParams(searchParams)
         params.set(name, value)
-        router.replace(`?${params.toString()}`)
+        if (history) router.push(`?${params.toString()}`, { scroll: false })
+        else router.replace(`?${params.toString()}`, { scroll: false })
     }
     const setList = (params: { name: string, value: string }[]) => {
         const _params = new URLSearchParams(searchParams)
@@ -42,7 +43,7 @@ export const useSearchParamsControl = () => {
     const _delete = (name: string) => {
         const params = new URLSearchParams(searchParams)
         params.delete(name)
-        router.replace(`?${params.toString()}`)
+        router.replace(`?${params.toString()}`, { scroll: false })
     }
 
     const arrayToBase64 = (values: string[]) => btoa(values.join(','))
