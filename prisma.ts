@@ -7,7 +7,9 @@ const pool = new Pool({
 })
 const adapter = new PrismaPg(pool)
 
-const prisma = new PrismaClient({
+type PrismaClientType = PrismaClient<{ log: [{ emit: 'event'; level: 'query' }, 'info', 'warn', 'error'] }>
+const globalForPrisma = global as unknown as { prisma: PrismaClientType }
+const prisma = globalForPrisma.prisma ?? new PrismaClient({
     adapter,
     log: [
         { emit: 'event', level: 'query' },
@@ -58,7 +60,6 @@ prisma.$on("query", (e) => {
  ${e.params} (${e.duration}ms)`);
 });
 
-const globalForPrisma = global as unknown as { prisma: typeof prisma }
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
