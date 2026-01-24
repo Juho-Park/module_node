@@ -14,8 +14,8 @@ const s3 = new S3Client({
 });
 const Bucket = process.env.AWS_BUCKET!
 
-export async function getSignedUrl(key: string | null): Promise<string> {
-    if (!key) return ''
+export async function getSignedUrl(key: string | null) {
+    if (!key) return undefined
     const command = new GetObjectCommand({
         Bucket,
         Key: key,
