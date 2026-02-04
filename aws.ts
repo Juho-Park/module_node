@@ -21,7 +21,7 @@ export async function getSignedUrl(key: string | null) {
         Key: key,
     });
 
-    return _getSignedUrl(s3, command, { expiresIn: 60 * 10 })
+    return _getSignedUrl(s3, command, { expiresIn: 60 * 60 }) // 1 hour
     /**
      * expiresIn: [sec]
      */
