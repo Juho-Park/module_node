@@ -8,8 +8,9 @@ function sign(json: JWTPayload, key?: string) {
         .setExpirationTime('7d')
         .sign(new TextEncoder().encode(key ?? KEY))
 }
-async function verify<T>(token: string, key?: string)
+async function verify<T>(token: string | undefined, key?: string)
     : Promise<T | undefined> {
+    if (!token) return undefined
     const { payload } = await jwtVerify(token, new TextEncoder().encode(key ?? KEY))
     return payload as T
 }
