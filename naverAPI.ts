@@ -89,7 +89,8 @@ export async function getTokens(code: string): Promise<Naver.TokenCode> {
     })
     return response.json()
 }
-// WIP; error handler
+
+// TODO; error handler
 export async function getUser(accessToken: string): Promise<Naver.User> {
     const URL = 'https://openapi.naver.com/v1/nid/me'
     const body = new URLSearchParams()

@@ -127,7 +127,7 @@ export async function getUser(accessToken: string)
 
     const _URL = 'https://kapi.kakao.com/v2/user/me'
     const body = new URLSearchParams()
-    body.append('secure_resource', `${isHttps}`) // WIP; true if https
+    body.append('secure_resource', `${isHttps}`)
 
     const resToken = await fetch(_URL, {
         method: 'POST',
