@@ -26,7 +26,7 @@ type publishParams<T> = {
 }
 export async function publish<T>({ url, body, deduplicationId }: publishParams<T>) {
     if (!baseUrl) throw new Error('BASEURL is not defined')
-    else if (baseUrl === 'http://localhost:3000') {
+    else if (baseUrl.startsWith('http://localhost')) {
         console.warn('QStash publish skipped in localhost')
         return
     }

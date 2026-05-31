@@ -1,65 +1,20 @@
 import { Prisma, PrismaClient } from '@prisma/client'
-import { PrismaPg } from "@prisma/adapter-pg"
-import { Pool } from 'pg';
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL
-})
-const adapter = new PrismaPg(pool)
+const connectionString = process.env.DATABASE_URL || '' //Bun.env.DATABASE_URL;
+if (!connectionString) {
+    throw new Error("❌ DATABASE_URL 환경 변수가 로드되지 않았습니다. .env 파일을 확인하세요.");
+}
 
-type PrismaClientType = PrismaClient<{ log: [{ emit: 'event'; level: 'query' }, 'info', 'warn', 'error'] }>
-const globalForPrisma = global as unknown as { prisma: PrismaClientType }
+// 1. pg.Pool 인스턴스를 먼저 생성해야 합니다.
+const adapter = new PrismaPg({
+    connectionString: process.env.DATABASE_URL,
+});
+const globalForPrisma = global as unknown as { prisma: PrismaClient }
+
 const prisma = globalForPrisma.prisma ?? new PrismaClient({
     adapter,
-    log: [
-        { emit: 'event', level: 'query' },
-        'info', 'warn', 'error']
-})
-
-// for custom logging
-// prisma.$on("query", (e) => {
-//     return
-//     // SQL 명령어 (SELECT, UPDATE 등)
-//     const type = e.query.split(" ")[0];
-
-//     // "public"."Account"."id" → Account.id
-//     // const colMatches = [
-//     //     ...e.query.matchAll(/"public"\."([^"]+)"\."([^"]+)"/g),
-//     // ].map((m) => `${m[1]}.${m[2]}`);
-
-//     // // 테이블별로 그룹화
-//     // const grouped: Record<string, string[]> = {};
-//     // for (const col of colMatches) {
-//     //     const [table, column] = col.split(".");
-//     //     if (!grouped[table]) grouped[table] = [];
-//     //     if (!grouped[table].includes(column)) {
-//     //         grouped[table].push(column);
-//     //     }
-//     // }
-
-//     // // 한 줄 요약 포맷: [SELECT] Account(id,email) User(name)
-//     // const summary = Object.entries(grouped)
-//     //     .map(([table, cols]) => `${table}(${cols.join(",")})`)
-//     //     .join(" ");
-
-//     const tableMatches = [...e.query.matchAll(/"public"\."([^"]+)"/g)].map(m => m[1]);
-//     const tables = [...new Set(tableMatches)];
-
-//     // WHERE 절만 추출
-//     let whereClause = "";
-//     const whereIndex = e.query.toUpperCase().indexOf("WHERE");
-//     if (whereIndex !== -1) {
-//         // "WHERE ..." 부분만 추출해서 불필요한 public 스키마 제거
-//         whereClause = e.query
-//             .substring(whereIndex)
-//             .replace(/"public"\."([^"]+)"\."([^"]+)"/g, "$1.$2")
-//             .trim();
-//     }
-
-//     console.log(`[${type}] ${tables}${whereClause ? " " + whereClause : ""}\
-//  ${e.params} (${e.duration}ms)`);
-// });
-
+});
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 

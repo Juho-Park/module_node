@@ -1,17 +1,22 @@
 import { jwtVerify, SignJWT, JWTPayload } from 'jose'
 
 const KEY = process.env.KEY
-function sign(json: JWTPayload, key?: string) {
+function sign(json: JWTPayload, opt: { key?: string, exp?: string | number, alg?: 'HS256' | 'RS256' }) {
+    if (!opt.key) opt.key = KEY
+    if (!opt.key) throw new Error('KEY is not defined')
+    if (!opt.exp) opt.exp = '7d'
+    if (!opt.alg) opt.alg = 'HS256'
     return new SignJWT(json)
-        .setProtectedHeader({ alg: 'HS256' })
+        .setProtectedHeader({ alg: opt.alg })
         .setIssuedAt()
-        .setExpirationTime('7d')
-        .sign(new TextEncoder().encode(key ?? KEY))
+        .setExpirationTime(opt.exp)
+        .sign(new TextEncoder().encode(opt.key))
 }
-async function verify<T>(token: string | undefined, key?: string)
+async function verify<T>(token: string | undefined, opt: { key?: string } = {})
     : Promise<T | undefined> {
     if (!token) return undefined
-    const { payload } = await jwtVerify(token, new TextEncoder().encode(key ?? KEY))
+    if (!opt.key) opt.key = KEY
+    const { payload } = await jwtVerify(token, new TextEncoder().encode(opt.key))
     return payload as T
 }
 
