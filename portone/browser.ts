@@ -15,10 +15,6 @@ export function popupVerification(identityVerificationId: string): Promise<{
     if (!PortoneStoreId || !PortoneChannels.KCP_ID) {
         throw Error(`PortOne store ID or channel key is not set. storeId: ${PortoneStoreId}, channelKey: ${PortoneChannels.KCP_ID}`)
     }
-    if (process.env.NODE_ENV === 'development') {
-        identityVerificationId = 'v2-test-' + crypto.randomUUID()
-        identityVerificationId = identityVerificationId.slice(0, 30) // 포트원에서 허용하는 최대 길이로 자르기
-    }
     return PortOne.requestIdentityVerification({
         storeId: PortoneStoreId, channelKey: PortoneChannels.KCP_ID,
         identityVerificationId, // 고유한 본인 인증 ID (예: UUID)

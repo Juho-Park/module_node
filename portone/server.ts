@@ -12,7 +12,7 @@ export async function getIdentityVerification(identityVerificationId: string): P
     status: "READY" | "VERIFIED" | "FAILED";
     verifiedCustomer?: {
         ci: string,
-        name: string; phoneNumber: string, birthDate: Date, gender: string,
+        name: string; phoneNumber: string, birthDate: string, gender: string,
         isForeigner: boolean
     };
     failure?: { code: string; message: string };
