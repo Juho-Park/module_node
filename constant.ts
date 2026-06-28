@@ -1,4 +1,4 @@
-export const DaysWeek = ['일', '월', '화', '수', '목', '금', '토']
+export const Dayweeks = ['일', '월', '화', '수', '목', '금', '토']
 
 // export const Activities = [
 //     { idx: 1, emoji: '🧗', name: '클라이밍' },

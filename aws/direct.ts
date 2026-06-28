@@ -6,7 +6,7 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3Client from "./client";
 
-export async function getUploadUrl(fileName: string, contentType: string) {
+export async function getPresigned(fileName: string, contentType: string) {
 
     const command = new PutObjectCommand({
         Bucket: process.env.AWS_BUCKET,
