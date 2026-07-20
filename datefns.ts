@@ -8,7 +8,7 @@ function _format(date: Date | undefined, opt: { day?: boolean } = { day: true })
 
 function _isPast(date: Date) {
     if (!date) return false;
-    return isPast(new Date(date));
+    return isPast(date);
 }
 
 export default {

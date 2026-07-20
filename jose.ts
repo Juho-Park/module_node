@@ -1,3 +1,4 @@
+// JWT
 import { jwtVerify, SignJWT, JWTPayload } from 'jose'
 
 const KEY = process.env.KEY
@@ -20,4 +21,4 @@ async function verify<T>(token: string | undefined, opt: { key?: string } = {})
     return payload as T
 }
 
-export default { sign, verify }
+export { sign, verify }

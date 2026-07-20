@@ -43,8 +43,3 @@ export const ExamTypes = [
 export const Essay = [
     { idx: 1, keyword: 'math', label: '수리', }
 ]
-export const Mui = {
-    color: {
-        primary: '#2196f3'
-    }
-}

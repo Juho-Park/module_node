@@ -1,28 +1,25 @@
-import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
-import * as schema from "@drizzle";
+// version 1.0.0-rc.4
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import relations from '@/drizzle/relations';
 
-// globalThis 환경에 pool과 db 인스턴스 타입을 확장 선언합니다.
-type DB = NodePgDatabase<typeof schema>;
+
+// 전역 객체 타입 확장 (Next.js dev 환경 싱글톤 유지용)
 const globalForDb = globalThis as unknown as {
-  pool: Pool | undefined;
-  db: DB | undefined;
+  conn: postgres.Sql | undefined;
 };
 
-// 1. 커넥션 풀 싱글톤 유지
-export const pool = globalForDb.pool ?? new Pool({
-  connectionString: process.env.DATABASE_URL!,
-  // 팁: 과도기 동안 Prisma와 병행 사용 시 max 연결 수를 제한하는 것이 안전합니다.
-  max: 10,
-});
+// 1. 커넥션 클라이언트 생성 (패스워드 없는 dev 환경)
+const connectionString = process.env.DATABASE_URL ?? 'postgresql://postgres@localhost:5432/dev_db';
 
-// 2. Drizzle DB 클라이언트 싱글톤 유지
-const db: DB = globalForDb.db ?? drizzle({ client: pool, schema });
+export const client = globalForDb.conn ?? postgres(connectionString);
 
-// 개발(development) 환경일 때만 globalThis 객체에 인스턴스를 저장하여 핫 리로드 시 재사용합니다.
-if (process.env.NODE_ENV !== "production") {
-  globalForDb.pool = pool;
-  globalForDb.db = db;
+// 2. 개발 환경일 때만 전역 객체에 커넥션 저장
+if (process.env.NODE_ENV !== 'production') {
+  globalForDb.conn = client;
 }
+
+// 3. Drizzle DB 인스턴스 생성 및 내보내기
+const db = drizzle({ client, relations });
 
 export default db;
