@@ -7,7 +7,6 @@
  */
 import { S3Client } from "@aws-sdk/client-s3";
 
-
 // globalThis에 s3Client 타입 정의 확장 (TypeScript 전용)
 const globalForS3 = globalThis as unknown as {
   s3Client: S3Client | undefined;
