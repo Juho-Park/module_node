@@ -2,7 +2,10 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import relations from '@/drizzle/relations';
+import type { PostgresJsTransaction } from 'drizzle-orm/postgres-js';
 
+
+export type Transaction = PostgresJsTransaction<typeof relations>;
 
 // 전역 객체 타입 확장 (Next.js dev 환경 싱글톤 유지용)
 const globalForDb = globalThis as unknown as {

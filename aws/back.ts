@@ -38,7 +38,7 @@ export async function putObjectToS3(key: string, contentType: string, body: Buff
 export async function getObjectPresigned(key: string, expiresIn: number = 60) {
   const command = new GetObjectCommand({
     Bucket: process.env.AWS_BUCKET,
-    Key: key,
+    Key: key
   })
 
   return getSignedUrl(s3Client, command, { expiresIn });
